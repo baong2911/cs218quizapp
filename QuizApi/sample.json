@@ -1,0 +1,27 @@
+[
+    {
+        "question": "What is the capital of France?",
+        "options": ["Berlin", "Madrid", "Paris", "Rome", "Lisbon"],
+        "correctAnswer": 3
+    },
+    {
+        "question": "Which planet is known as the Red Planet?",
+        "options": ["Earth", "Mars", "Jupiter", "Saturn", "Venus"],
+        "correctAnswer": 2
+    },
+    {
+        "question": "What is the largest mammal in the world?",
+        "options": ["Elephant", "Giraffe", "Blue Whale", "Shark", "Dolphin"],
+        "correctAnswer": 3
+    },
+    {
+        "question": "Who wrote 'Hamlet'?",
+        "options": ["Mark Twain", "Charles Dickens", "William Shakespeare", "J.K. Rowling", "Jane Austen"],
+        "correctAnswer": 3
+    },
+    {
+        "question": "What is the boiling point of water in Celsius?",
+        "options": ["90°C", "95°C", "100°C", "105°C", "110°C"],
+        "correctAnswer": 3
+    }
+]
