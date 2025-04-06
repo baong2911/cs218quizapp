@@ -1,0 +1,49 @@
+.start-page {
+  /* ...existing code... */
+  background-image: url('/public/bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  
+  /* Center content */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* ...existing code... */
+}
+
+/* For text elements within the start page */
+.start-page h1,
+.start-page h2,
+.start-page h3,
+.start-page p,
+.start-page button {
+  font-size: 0.9rem; /* Smaller text */
+  text-align: center;
+  max-width: 20%;
+  z-index: 1; /* Ensure text appears above the background */
+}
+
+.start-page h1 {
+  font-size: 1.5rem; /* Slightly larger for headings */
+}
+
+/* Container for centered content */
+.start-page-content {
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 80%;
+  text-align: center;
+}

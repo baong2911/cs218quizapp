@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./StartPage.css";
 
 const StartPage = () => {
     const [name, setName] = useState("");
@@ -14,9 +15,10 @@ const StartPage = () => {
 
 
     return (
-        <div>
-            <h1>Welcome to Quiz <br/> develope <br/> by <br/>Bao H Nguyen</h1>
+        <div className="start-page">
+            <h1 style={{color:"#99FFFF"}}><b><i>Welcome to Quiz Website<br/> developed by <br/>Bao H. Nguyen</i></b></h1>
             <input
+				style={{ width: "300px" }}
                 type="text"
                 className="form-control mb-3"
                 placeholder="Enter your name"
