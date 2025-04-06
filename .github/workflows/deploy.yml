@@ -28,7 +28,7 @@ jobs:
 
             # Service A
             cd ~/cs218quizapp/QuizApp
-            yarn
+            yarn start
             screen -S web -X quit || true
             screen -S web -dm bash -c "yarn dev"
 
