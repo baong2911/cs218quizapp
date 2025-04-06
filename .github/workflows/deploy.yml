@@ -28,9 +28,9 @@ jobs:
 
             # Service A
             cd ~/cs218quizapp/QuizApp
-            yarn start
+            yarn
             screen -S web -X quit || true
-            screen -S web -dm bash -c "yarn dev"
+            screen -S web -dm bash -c "yarn start"
 
             # Service B
             cd  ~/cs218quizapp/QuizApi
