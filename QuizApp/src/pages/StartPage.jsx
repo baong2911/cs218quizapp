@@ -16,7 +16,7 @@ const StartPage = () => {
 
     return (
         <div className="start-page">
-            <h1 style={{color:"#99FFFF"}}><b><i>Welcome to Quiz Website<br/> developed by <br/>Bao H. Nguyen</i></b></h1>
+            <h1 style={{color:"#99FFFF"}}><b><i>Welcome to Quiz Website of Bao<br/> developed by <br/>Bao H. Nguyen</i></b></h1>
             <input
 				style={{ width: "300px" }}
                 type="text"
