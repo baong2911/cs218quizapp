@@ -1,14 +1,22 @@
-
 import { useEffect, useState } from "react";
-
 import { useLocation, useNavigate } from "react-router-dom";
-
-// import {data} from '../assets/data'// Import dữ liệu gốc
+import { getRandomQuiz } from "../api/quiz";
 
 const ResultPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { questions, playerName, score, userAnswers } = location.state || {};
+    const { questions, playerName, score, userAnswers, quizId } = location.state || {};
+    
+    const handleNextQuiz = async () => {
+        try {
+            const randomQuiz = await getRandomQuiz(quizId);
+            localStorage.setItem("playerName", playerName);
+            navigate("/quiz", { state: { quizId: randomQuiz._id } });
+        } catch (error) {
+            console.error("Error fetching next quiz:", error);
+            navigate("/");
+        }
+    };
 
     return (
         <div className="container mt-5">
@@ -29,16 +37,30 @@ const ResultPage = () => {
 
                                     <div className="row g-2 mt-3">
                                         {[1, 2, 3, 4].map((optIndex) => {
-                                            const isUserAnswer = userAnswer?.selected === optIndex;
-                                            const isCorrectAnswer = item.ans === optIndex;
+                                            const isUserAnswer = Array.isArray(userAnswer?.selected) 
+                                                ? userAnswer?.selected.includes(optIndex) 
+                                                : userAnswer?.selected === optIndex;
+                                            
+                                            const isCorrectAnswer = Array.isArray(item.ans)
+                                                ? item.ans.map(a => a + 1).includes(optIndex)
+                                                : item.ans + 1 === optIndex;
+
+                                            let optionStyle = "p-3 border rounded text-center ";
+                                            
+                                            if (isUserAnswer) {
+                                                optionStyle += isCorrectAnswer 
+                                                    ? "bg-success text-white" 
+                                                    : "bg-danger text-white";
+                                            } else if (isCorrectAnswer) {
+                                                optionStyle += "bg-success bg-opacity-50";
+                                            }
 
                                             return (
                                                 <div key={optIndex} className="col-6">
-                                                    <div className={`p-3 border rounded text-center 
-                                                        ${isUserAnswer ? "border-primary" : ""} 
-                                                        ${isCorrectAnswer ? "bg-success text-white" : ""}`}>
+                                                    <div className={optionStyle}>
                                                         {item[`option${optIndex}`]}{" "}
                                                         {isUserAnswer && (isCorrectAnswer ? "✅" : "❌")}
+                                                        {!isUserAnswer && isCorrectAnswer && "✓"}
                                                     </div>
                                                 </div>
                                             );
@@ -52,7 +74,8 @@ const ResultPage = () => {
             </div>
 
             <div className="text-center mt-4">
-                <button className="btn btn-primary btn-lg" onClick={() => navigate("/")}>Play Again</button>
+                <button className="btn btn-primary btn-lg me-3" onClick={() => navigate("/")}>Play Again</button>
+                <button className="btn btn-success btn-lg" onClick={handleNextQuiz}>Next Quiz</button>
             </div>
         </div>
     );
