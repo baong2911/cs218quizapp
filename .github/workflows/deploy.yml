@@ -19,36 +19,36 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ vars.DOCKERHUB_TOKEN }}
       
       - name: Build and push QuizApp image
         uses: docker/build-push-action@v4
         with:
           context: ./QuizApp
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/quizapp:latest
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/quizapp:latest
       
       - name: Build and push QuizApi image
         uses: docker/build-push-action@v4
         with:
           context: ./QuizApi
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/quizapi:latest
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/quizapi:latest
 
       - name: Setup SSH Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.PEM_KEY }}" > ~/.ssh/priv.pem
+          echo "${{ vars.PEM_KEY }}" > ~/.ssh/priv.pem
           chmod 600 ~/.ssh/priv.pem
-          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ vars.HOST }} >> ~/.ssh/known_hosts
 
       - name: SSH and Deploy Docker Containers
         run: |
-          ssh -i ~/.ssh/priv.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+          ssh -i ~/.ssh/priv.pem ${{ vars.USERNAME }}@${{ vars.HOST }} << 'EOF'
             # Pull the latest images
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/quizapp:latest
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/quizapi:latest
+            docker pull ${{ vars.DOCKERHUB_USERNAME }}/quizapp:latest
+            docker pull ${{ vars.DOCKERHUB_USERNAME }}/quizapi:latest
 
             # Stop running containers
             docker stop quizapp || true
@@ -60,15 +60,15 @@ jobs:
             docker run -d \
               --name quizapi \
               -p 5000:5000 \
-              -e MONGO_URI=${{ secrets.MONGO_URI }} \
+              -e MONGO_URI=${{ vars.MONGO_URI }} \
               --restart unless-stopped \
-              ${{ secrets.DOCKERHUB_USERNAME }}/quizapi:latest
+              ${{ vars.DOCKERHUB_USERNAME }}/quizapi:latest
 
             # Start QuizApp container
             docker run -d \
               --name quizapp \
               -p 3000:3000 \
-              -e REACT_APP_API_URL=${{ secrets.API }} \
+              -e REACT_APP_API_URL=${{ vars.API }} \
               --restart unless-stopped \
-              ${{ secrets.DOCKERHUB_USERNAME }}/quizapp:latest
+              ${{ vars.DOCKERHUB_USERNAME }}/quizapp:latest
           EOF
