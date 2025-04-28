@@ -6,12 +6,35 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build and push QuizApp image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./QuizApp
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/quizapp:latest
+      
+      - name: Build and push QuizApi image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./QuizApi
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/quizapi:latest
 
       - name: Setup SSH Key
         run: |
@@ -20,21 +43,32 @@ jobs:
           chmod 600 ~/.ssh/priv.pem
           ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
-      - name: SSH and Deploy Both Services
+      - name: SSH and Deploy Docker Containers
         run: |
           ssh -i ~/.ssh/priv.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
-            cd ${{ secrets.APP_DIR }}
-            git pull origin main
+            # Pull the latest images
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/quizapp:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/quizapi:latest
 
-            # Service A
-            cd ~/cs218quizapp/QuizApp
-            yarn
-            screen -S web -X quit || true
-            screen -S web -dm bash -c "yarn start"
+            # Stop running containers
+            docker stop quizapp || true
+            docker stop quizapi || true
+            docker rm quizapp || true
+            docker rm quizapi || true
 
-            # Service B
-            cd  ~/cs218quizapp/QuizApi
-            npm install
-            screen -S api -X quit || true
-            screen -S api -dm bash -c "node api"
+            # Start QuizApi container
+            docker run -d \
+              --name quizapi \
+              -p 5000:5000 \
+              -e MONGO_URI=${{ secrets.MONGO_URI }} \
+              --restart unless-stopped \
+              ${{ secrets.DOCKERHUB_USERNAME }}/quizapi:latest
+
+            # Start QuizApp container
+            docker run -d \
+              --name quizapp \
+              -p 3000:3000 \
+              -e REACT_APP_API_URL=${{ secrets.API }} \
+              --restart unless-stopped \
+              ${{ secrets.DOCKERHUB_USERNAME }}/quizapp:latest
           EOF
