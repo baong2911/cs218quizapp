@@ -51,3 +51,7 @@ Below is a comprehensive list of all API endpoints available in the QuizApi serv
 | POST | /api/quizzes/:id/questions | Add a question to a quiz (requires questionId in request body) |
 | DELETE | /api/quizzes/:id/questions/:questionId | Remove a question from a quiz |
 | POST | /api/quizzes/submit | Submit quiz results with playerName, score, and userAnswers |
+
+##### CI/CD
+
+- Build image from Dockerfile and then push image to DockerHub.
